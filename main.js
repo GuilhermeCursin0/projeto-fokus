@@ -1,35 +1,36 @@
 let listaDeContextos = document.querySelectorAll('.app__card-button');
 let imgPrincipal = document.querySelector('.app__image');
-
+let relogio = document.getElementById('timer');
 let checkBoxMusica = document.getElementById('alternar-musica');
 let buttonComecarPausar = document.querySelector('.app__card-primary-button'); 
 let situacao = buttonComecarPausar.innerText;
 let nomeDoArquivoImg = {Pausar: 'pause', Começar: 'play_arrow'};
 
-let musica = document.querySelector('.som-luna');
+const musica = new Audio('sons/luna-rise-part-one.mp3');
+musica.loop = true; // Musica toca em loop
 
 // Funções --------------------------------------------------
 
-function selecionaContexto(parametro){
+function selecionaContexto(indiceListContexto){
     listaDeContextos.forEach( function(contexto) {
         contexto.classList.remove('active');
     });
     
-    listaDeContextos[parametro].classList.add('active');
+    listaDeContextos[indiceListContexto].classList.add('active');
 }
 
-function alteraContexto(x) {
-    if (x == 0) {
+function alteraContexto(indiceListContexto) {
+    if (indiceListContexto == 0) {
         // Foco
         mudaImgEFundo('foco');
         mudaTextoH1('Otimize sua produtividade,', 'mergulhe no que importa.');
 
-    } else if (x == 1) {
+    } else if (indiceListContexto == 1) {
         // Curto
         mudaImgEFundo('descanso-curto');
         mudaTextoH1('Que tal dar uma respirada?', 'Faça uma pausa curta!');
 
-    } else if (x == 2) {
+    } else if (indiceListContexto == 2) {
         // Longo
         mudaImgEFundo('descanso-longo');
         mudaTextoH1('Hora de voltar à superfície.', 'Faça uma pausa longa.');
@@ -38,9 +39,9 @@ function alteraContexto(x) {
     }
 }
 
-function mudaImgEFundo(parametro) {
-    document.querySelector('html').dataset.contexto = parametro;
-    imgPrincipal.setAttribute('src', `imagens/${parametro}.png`);
+function mudaImgEFundo(nomeDataContexto) {
+    document.querySelector('html').dataset.contexto = nomeDataContexto;
+    imgPrincipal.setAttribute('src', `imagens/${nomeDataContexto}.png`);
 
 /* Outra forma usando Switch no lugar da function mudaTextoH1
     switch (parametro) {
@@ -112,5 +113,25 @@ buttonComecarPausar.addEventListener('click', () => {
     trocaButtonComecarPausar(nomeDoArquivoImg[situacao]);
 });
 
-// Ainda pendente ----------------------------------------------------
+
+// pendencias ----------------------------------------
+    
+// Criar Relogio  
+/*
+    let segundos = 500;
+    relogio.textContent=`${segundos}`;
+    let crons;
+
+    function teste2(){
+        crons = setInterval(() => {
+            seiLa();
+        }, 1000);
+    }
+
+    function seiLa(){
+        segundos--;
+        relogio.textContent=`${segundos}`;
+        
+    }
+*/
 
