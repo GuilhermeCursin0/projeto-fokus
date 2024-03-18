@@ -1,47 +1,48 @@
-let buttonSelect = document.querySelectorAll('.app__card-button');
-let dataContexto = document.querySelector('html');
-let imgA = document.querySelector('.app__image');
+let listaDeContextos = document.querySelectorAll('.app__card-button');
+let imgPrincipal = document.querySelector('.app__image');
 
+let checkBoxMusica = document.getElementById('alternar-musica');
+let buttonComecarPausar = document.querySelector('.app__card-primary-button'); 
+let situacao = buttonComecarPausar.innerText;
+let nomeDoArquivoImg = {Pausar: 'pause', Começar: 'play_arrow'};
 
-for (let i = 0; i < buttonSelect.length; i++) {
-    buttonSelect[i].onclick = function () {
-        alteraSeletor(i);
-    }
+let musica = document.querySelector('.som-luna');
 
-    /* Pode utilizar outro metodo se quiser:------------------------
+// Funções --------------------------------------------------
 
-        buttonSelect[i].addEventListener( 'click', ()=>{alteraSeletor(i)} );
-    */
+function selecionaContexto(parametro){
+    listaDeContextos.forEach( function(contexto) {
+        contexto.classList.remove('active');
+    });
+    
+    listaDeContextos[parametro].classList.add('active');
 }
 
-function alteraSeletor(x) {
-    buttonSelect[x].classList.add('active');
-
+function alteraContexto(x) {
     if (x == 0) {
         // Foco
-        removeActive(1, 2);
+        mudaImgEFundo('foco');
         mudaTextoH1('Otimize sua produtividade,', 'mergulhe no que importa.');
-        alteraEstiloEImg('foco');
 
     } else if (x == 1) {
         // Curto
-        removeActive(0, 2);
+        mudaImgEFundo('descanso-curto');
         mudaTextoH1('Que tal dar uma respirada?', 'Faça uma pausa curta!');
-        alteraEstiloEImg('descanso-curto');
 
     } else if (x == 2) {
         // Longo
-        removeActive(0, 1);
+        mudaImgEFundo('descanso-longo');
         mudaTextoH1('Hora de voltar à superfície.', 'Faça uma pausa longa.');
-        alteraEstiloEImg('descanso-longo');
 
+    }else{
     }
 }
 
-function alteraEstiloEImg(parametro) {
-    dataContexto.dataset.contexto = parametro;
-    imgA.setAttribute('src', `imagens/${parametro}.png`);
-/*
+function mudaImgEFundo(parametro) {
+    document.querySelector('html').dataset.contexto = parametro;
+    imgPrincipal.setAttribute('src', `imagens/${parametro}.png`);
+
+/* Outra forma usando Switch no lugar da function mudaTextoH1
     switch (parametro) {
         case 'foco':
             document.querySelector('h1').innerHTML =
@@ -67,23 +68,49 @@ function alteraEstiloEImg(parametro) {
 */
 }
 
-function removeActive(y, z) {
-    buttonSelect[y].classList.remove('active');
-    buttonSelect[z].classList.remove('active');
-    // console.log('remove funciona');
+function mudaTextoH1(TEXTO1, TEXTO2) {
+    document.querySelector('h1').innerHTML =
+        `${TEXTO1}<br>
+        <strong class="app__title-strong">${TEXTO2}</strong>`
+    ;
 }
 
-function mudaTextoH1(TEXTO1, TEXTO2) {
-    document.querySelector('h1').innerHTML =`${TEXTO1}<br><strong class="app__title-strong">${TEXTO2}</strong>`;
+function musicaAtivaDesativa(){
+    if(checkBoxMusica.checked && situacao == 'Pausar'){
+        musica.play();
+    }else{
+        musica.pause();
+    }
 }
+
+function trocaButtonComecarPausar(nomeArquivo){
+    document.querySelector('.app__card-primary-button-icon').setAttribute('src', `/imagens/${nomeArquivo}.png` );
+    document.querySelector('.app__card-primary-button span').textContent = `${situacao}`;
+}
+
+// Eventos ------------------------------------------------------
+
+for (let i = 0; i < listaDeContextos.length; i++) {
+    listaDeContextos[i].onclick = function () {
+        selecionaContexto(i);
+        alteraContexto(i);
+
+        situacao = 'Começar';
+        musicaAtivaDesativa();
+        trocaButtonComecarPausar(nomeDoArquivoImg[situacao]);
+    }
+}
+
+checkBoxMusica.addEventListener('change', () => { 
+    musicaAtivaDesativa();
+});
+
+buttonComecarPausar.addEventListener('click', () => { 
+    situacao = situacao == 'Começar'? 'Pausar': 'Começar';
+    
+    musicaAtivaDesativa();
+    trocaButtonComecarPausar(nomeDoArquivoImg[situacao]);
+});
 
 // Ainda pendente ----------------------------------------------------
-
-let buttonComecar = document.getElementById('start-pause');
-let tempoFoco = 1500;
-let tempoCurto = 300;
-let tempoLongo = 900;
-
-
-buttonComecar.addEventListener('click', () => { console.log('ola mundo') });
 
