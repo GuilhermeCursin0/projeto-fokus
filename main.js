@@ -1,16 +1,18 @@
 let contextoAtual = document.querySelector('html').dataset;
-let seletorDeContextos = document.querySelectorAll('.app__card-button');
-const nomeContexto = [
-    {nome:'foco', tempo: 15},
-    {nome:'descanso-curto', tempo: 3},
-    {nome:'descanso-longo', tempo: 9}
+let nomeContexto = [
+    {nome:'foco', tempo: 1500},
+    {nome:'descanso-curto', tempo: 30},
+    {nome:'descanso-longo', tempo: 900}
 ];
 let imgPrincipal = document.querySelector('.app__image');
+let nomeDoArquivoImg = { Pausar: 'pause', Começar: 'play_arrow' };
+let seletorDeContextos = document.querySelectorAll('.app__card-button');
 let relogio = document.getElementById('timer');
+let tempoAtual = nomeContexto[0]['tempo'];
+let crons = null;
 let checkBoxMusica = document.getElementById('alternar-musica');
 let buttonComecarPausar = document.querySelector('.app__card-primary-button'); 
 let situacaoStartPause = buttonComecarPausar.innerText;
-const nomeDoArquivoImg = { Pausar: 'pause', Começar: 'play_arrow' };
 const musica = {
     play: new Audio('/sons/play.wav'),
     pause: new Audio('/sons/pause.mp3'),
@@ -19,8 +21,6 @@ const musica = {
 };
 musica['luna'].loop = true; // Musica toca em loop
 
-// Configurações iniciais -----------------------------------
-relogio.textContent = nomeContexto[0]['tempo'];
 // Funções --------------------------------------------------
 
 function selecionaContexto(indiceLista){
@@ -33,6 +33,8 @@ function selecionaContexto(indiceLista){
 }
 
 function alteraContexto(indiceLista) {
+    mudaImgEFundo(contextoAtual.contexto);
+
     if (indiceLista == 0) {
         mudaTextoH1('Otimize sua produtividade,', 'mergulhe no que importa.');
 
@@ -43,8 +45,8 @@ function alteraContexto(indiceLista) {
         mudaTextoH1('Hora de voltar à superfície.', 'Faça uma pausa longa.');
     }
 
-    mudaImgEFundo(contextoAtual.contexto);
-    relogio.textContent = nomeContexto[indiceLista]['tempo'];
+    tempoAtual = nomeContexto[indiceLista]['tempo'];
+    mudaRelogio();
 }
 
 function mudaImgEFundo(nomeDataContexto) {
@@ -97,12 +99,52 @@ function trocaButtonComecarPausar(nomeArquivo){
     document.querySelector('.app__card-primary-button span').textContent = `${situacaoStartPause}`;
 }
 
+// Relogio ------------------------------------- 
+
+function cronIniciarPausar(){
+    if(crons){
+        musica['pause'].play();  // som Pausar temporizador
+        cronZerar();
+        return;
+    }else{
+        musica['play'].play(); // som inicio temporizador 
+        crons = setInterval(()=>{contagem()}, 1000);
+    }
+}
+function cronZerar(){
+    clearInterval(crons);
+    crons = null;
+}
+function contagem(){
+    if (tempoAtual>=0){
+        mudaRelogio();
+        tempoAtual--;
+    }else{
+        musica['beep'].play(); // som de tempo esgotado 
+        cronZerar();
+        situacaoStartPause = 'Começar';
+        musicaAtivaDesativa();
+        trocaButtonComecarPausar(nomeDoArquivoImg[situacaoStartPause]);
+        return;
+    }
+}
+function mudaRelogio(){
+    let tempo = new Date (tempoAtual * 1000);
+    let tempoFormatado = tempo.toLocaleTimeString('pt-br',{minute: '2-digit', second: '2-digit'});
+    relogio.textContent = tempoFormatado;
+}
+
+// Configurações iniciais ---------------------------------------
+
+mudaRelogio();
+
 // Eventos ------------------------------------------------------
 
 for (let i = 0; i < seletorDeContextos.length; i++) {
     seletorDeContextos[i].onclick = function () {
         selecionaContexto(i);
         alteraContexto(i);
+        cronZerar();
         
         situacaoStartPause = 'Começar';
         musicaAtivaDesativa();
@@ -122,38 +164,3 @@ buttonComecarPausar.addEventListener('click', () => {
 
     cronIniciarPausar();
 });
-
-
-// pendencias ----------------------------------------
-
-// Criar Relogio ------------------------------------- 
-let crons = null;
-let tempo ;
-
-function cronIniciarPausar(){
-    tempo = relogio.textContent;
-    if(crons){
-        // musica['pause'].play();  // som Pausar temporizador
-        cronZerar();
-        return;
-    }else{
-        // musica['play'].play(); // som inicio temporizador 
-        crons = setInterval(()=>{contagem()}, 1000);
-    }
-}
-function cronZerar(){
-    clearInterval(crons);
-    crons = null;
-}
-function contagem(){
-    if (tempo>=0){
-        relogio.textContent = tempo;
-        tempo--;
-    }else{
-        // musica['beep'].play(); // som de tempo esgotado 
-        cronZerar();
-        return;
-    }
-}
-
-
