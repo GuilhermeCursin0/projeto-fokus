@@ -1,14 +1,14 @@
 let contextoAtual = document.querySelector('html').dataset;
 let nomeContexto = [
-    {nome:'foco', tempo: 1500},
-    {nome:'descanso-curto', tempo: 30},
-    {nome:'descanso-longo', tempo: 900}
+    {nome:'foco', tempoEmSegundos: 1500},
+    {nome:'descanso-curto', tempoEmSegundos: 300},
+    {nome:'descanso-longo', tempoEmSegundos: 900}
 ];
 let imgPrincipal = document.querySelector('.app__image');
 let nomeDoArquivoImg = { Pausar: 'pause', Começar: 'play_arrow' };
 let seletorDeContextos = document.querySelectorAll('.app__card-button');
 let relogio = document.getElementById('timer');
-let tempoAtual = nomeContexto[0]['tempo'];
+let tempoAtual = nomeContexto[0]['tempoEmSegundos'];
 let crons = null;
 let checkBoxMusica = document.getElementById('alternar-musica');
 let buttonComecarPausar = document.querySelector('.app__card-primary-button'); 
@@ -34,6 +34,9 @@ function selecionaContexto(indiceLista){
 
 function alteraContexto(indiceLista) {
     mudaImgEFundo(contextoAtual.contexto);
+    if(situacaoStartPause == "Pausar"){
+        musica['pause'].play();
+    }
 
     if (indiceLista == 0) {
         mudaTextoH1('Otimize sua produtividade,', 'mergulhe no que importa.');
@@ -45,7 +48,7 @@ function alteraContexto(indiceLista) {
         mudaTextoH1('Hora de voltar à superfície.', 'Faça uma pausa longa.');
     }
 
-    tempoAtual = nomeContexto[indiceLista]['tempo'];
+    tempoAtual = nomeContexto[indiceLista]['tempoEmSegundos'];
     mudaRelogio();
 }
 
